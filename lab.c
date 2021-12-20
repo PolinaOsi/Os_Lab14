@@ -85,7 +85,6 @@ int main (int  argc, char *argv[]) {
     char text_of_child[size_of_string] = "Child: ";
     pthread_t id_of_thread;
 
-
     args_of_thread args_of_parent,
             args_of_child;
     args_of_parent.text = text_of_parent;
