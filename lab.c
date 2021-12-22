@@ -67,16 +67,17 @@ void *printText (args_of_thread *argumets) {
         int result_of_wait = checkOfErrors(errno, "Error of waiting of semaphore");
         if (result_of_wait != SUCCESS) {
             destroyOfSemaphore(argumets->semaphores);
-            exit(EXIT_FAILURE);
+            return (void *)EXIT_FAILURE;
         }
         printf("%s %d\n", text, i);
         errno = sem_post(&argumets->semaphores[num_of_cur_semaphore]);
         int result_of_post = checkOfErrors(errno, "Error of posting of semaphore");
         if (result_of_post != SUCCESS) {
             destroyOfSemaphore(argumets->semaphores);
-            exit(EXIT_FAILURE);
+            return (void *)EXIT_FAILURE;
         }
     }
+    return SUCCESS;
 }
 
 int main (int  argc, char *argv[]) {
@@ -84,6 +85,7 @@ int main (int  argc, char *argv[]) {
     char text_of_parent[size_of_string] = "Parent: ";
     char text_of_child[size_of_string] = "Child: ";
     pthread_t id_of_thread;
+
 
     args_of_thread args_of_parent,
             args_of_child;
@@ -107,12 +109,19 @@ int main (int  argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    printText(&args_of_parent);
+    int result_of_print_parent;
+    result_of_print_parent = (int)printText(&args_of_parent);
 
-    errno = pthread_join(id_of_thread, NULL);
+    int result_of_print_child;
+    errno = pthread_join(id_of_thread, (void **)&result_of_print_child);
     int result_of_joining = checkOfErrors(errno, "Error of joining of thread");
     if (result_of_joining != SUCCESS) {
         destroyOfSemaphore(semaphores);
+        exit(EXIT_FAILURE);
+    }
+
+    if (result_of_print_child != SUCCESS || result_of_print_parent != SUCCESS) {
+        fprintf(stderr, "Error in printText() function");
         exit(EXIT_FAILURE);
     }
 
