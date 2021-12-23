@@ -3,8 +3,6 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <errno.h>
-#include <string.h>
-#include <unistd.h>
 #include <semaphore.h>
 
 #define SUCCESS 0
@@ -45,12 +43,14 @@ int initializeOfSemaphore (sem_t *semaphores) {
     errno = sem_init(&semaphores[parent_thread], NOT_PROCESS_SHARED, parent_thread);
     int result_of_init_of_semaphores = checkOfErrors(errno, "Error of initialization of semaphore number 1");
     if (result_of_init_of_semaphores != SUCCESS) {
+        destroyOfSemaphore(semaphores);
         return EXIT_FAILURE;
     }
 
     errno = sem_init(&semaphores[child_thread], NOT_PROCESS_SHARED, child_thread);
     result_of_init_of_semaphores = checkOfErrors(errno, "Error of initialization of semaphores umber 2");
     if (result_of_init_of_semaphores != SUCCESS) {
+        destroyOfSemaphore(semaphores);
         return EXIT_FAILURE;
     }
 
